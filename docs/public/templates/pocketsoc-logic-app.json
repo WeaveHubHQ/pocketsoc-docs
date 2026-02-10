@@ -1,0 +1,31 @@
+{
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "triggers": {
+      "When_a_HTTP_request_is_received": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "method": "POST"
+        }
+      }
+    },
+    "actions": {
+      "Forward_to_PocketSOC": {
+        "type": "Http",
+        "inputs": {
+          "method": "POST",
+          "uri": "YOUR_POCKETSOC_WEBHOOK_URL",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "body": "@triggerBody()"
+        },
+        "runAfter": {}
+      }
+    },
+    "outputs": {}
+  },
+  "parameters": {}
+}

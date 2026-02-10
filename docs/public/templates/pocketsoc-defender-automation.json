@@ -1,0 +1,130 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "pocketsocWebhookUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Your PocketSOC Azure Logic App webhook URL from Portal Settings"
+      }
+    },
+    "logicAppName": {
+      "type": "string",
+      "defaultValue": "pocketsoc-defender-alerts",
+      "metadata": {
+        "description": "Name of the Logic App resource"
+      }
+    },
+    "automationName": {
+      "type": "string",
+      "defaultValue": "pocketsoc-push-notifications",
+      "metadata": {
+        "description": "Name of the Workflow Automation resource"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "Location for all resources"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2019-05-01",
+      "name": "[parameters('logicAppName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "state": "Enabled",
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "triggers": {
+            "When_a_HTTP_request_is_received": {
+              "type": "Request",
+              "kind": "Http",
+              "inputs": {
+                "method": "POST"
+              }
+            }
+          },
+          "actions": {
+            "Forward_to_PocketSOC": {
+              "type": "Http",
+              "inputs": {
+                "method": "POST",
+                "uri": "[parameters('pocketsocWebhookUrl')]",
+                "headers": {
+                  "Content-Type": "application/json"
+                },
+                "body": "@triggerBody()"
+              },
+              "runAfter": {}
+            }
+          },
+          "outputs": {}
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Security/automations",
+      "apiVersion": "2019-01-01-preview",
+      "name": "[parameters('automationName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Logic/workflows', parameters('logicAppName'))]"
+      ],
+      "properties": {
+        "isEnabled": true,
+        "scopes": [
+          {
+            "description": "[concat('Subscription: ', subscription().displayName)]",
+            "scopePath": "[subscription().id]"
+          }
+        ],
+        "sources": [
+          {
+            "eventSource": "Alerts",
+            "ruleSets": [
+              {
+                "rules": [
+                  {
+                    "propertyJPath": "Severity",
+                    "propertyType": "String",
+                    "expectedValue": "High",
+                    "operator": "Equals"
+                  }
+                ]
+              },
+              {
+                "rules": [
+                  {
+                    "propertyJPath": "Severity",
+                    "propertyType": "String",
+                    "expectedValue": "Medium",
+                    "operator": "Equals"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "actions": [
+          {
+            "actionType": "LogicApp",
+            "logicAppResourceId": "[resourceId('Microsoft.Logic/workflows', parameters('logicAppName'))]",
+            "uri": "[listCallbackUrl(resourceId('Microsoft.Logic/workflows/triggers', parameters('logicAppName'), 'When_a_HTTP_request_is_received'), '2019-05-01').value]"
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "logicAppCallbackUrl": {
+      "type": "string",
+      "value": "[listCallbackUrl(resourceId('Microsoft.Logic/workflows/triggers', parameters('logicAppName'), 'When_a_HTTP_request_is_received'), '2019-05-01').value]"
+    }
+  }
+}

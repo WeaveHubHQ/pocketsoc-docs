@@ -175,6 +175,85 @@ Defender for Cloud uses different status names than other vendors:
 
 You can change alert statuses from PocketSOC and they will be reflected in the Azure portal. Only transitions allowed by Azure will take effect — for example, a Resolved alert can only be set back to Active.
 
+## Push Notifications via Azure Logic App
+
+The steps above configure PocketSOC to **pull** alerts from Azure on a schedule. If you also want **real-time push notifications**, you can set up an Azure Logic App that forwards Defender for Cloud alerts to PocketSOC the moment they fire.
+
+::: tip Why a Logic App?
+Defender for Cloud's built-in email notifications are rate-limited and delayed. A Logic App + Workflow Automation delivers alerts to your phone in seconds.
+:::
+
+### Find your webhook URL
+
+1. Go to [portal.pocketsoc.com](https://portal.pocketsoc.com) > **Settings**.
+2. Under **Webhook URLs**, copy the **Azure Logic App Webhook URL**.
+
+### Option A: ARM Template (recommended)
+
+Deploy both the Logic App and Workflow Automation in one step.
+
+**Using Azure CLI:**
+
+```bash
+az deployment group create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --template-uri https://docs.pocketsoc.com/templates/pocketsoc-defender-automation.json \
+  --parameters pocketsocWebhookUrl="<YOUR_POCKETSOC_WEBHOOK_URL>"
+```
+
+Or download the template and deploy locally:
+
+```bash
+az deployment group create \
+  --resource-group <YOUR_RESOURCE_GROUP> \
+  --template-file pocketsoc-defender-automation.json \
+  --parameters pocketsocWebhookUrl="<YOUR_POCKETSOC_WEBHOOK_URL>"
+```
+
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fdocs.pocketsoc.com%2Ftemplates%2Fpocketsoc-defender-automation.json)
+
+The template creates:
+- A **Logic App** with an HTTP trigger that forwards alert payloads to PocketSOC
+- A **Workflow Automation** that triggers on High and Medium severity Defender for Cloud alerts
+
+Download: [pocketsoc-defender-automation.json](/templates/pocketsoc-defender-automation.json)
+
+### Option B: Manual setup
+
+#### 1. Create the Logic App
+
+1. In the Azure Portal, go to **Logic Apps** > **Add**.
+2. Select **Consumption** plan and your resource group.
+3. Name it `pocketsoc-defender-alerts` and click **Review + Create**.
+4. Once deployed, open the Logic App and go to **Logic App Designer** > **Code View**.
+5. Replace the contents with the template below, then replace `YOUR_POCKETSOC_WEBHOOK_URL` with your webhook URL from Portal Settings.
+6. Click **Save**.
+
+Download: [pocketsoc-logic-app.json](/templates/pocketsoc-logic-app.json)
+
+#### 2. Create Workflow Automation
+
+1. Go to **Defender for Cloud** > **Workflow automation** > **Add workflow automation**.
+2. Configure:
+
+| Field | Value |
+|-------|-------|
+| **Name** | `pocketsoc-push-notifications` |
+| **Subscription** | Your subscription |
+| **Resource group** | Same as the Logic App |
+| **Defender for Cloud data type** | Security alerts |
+| **Alert severity** | High, Medium |
+| **Logic App** | Select `pocketsoc-defender-alerts` |
+
+3. Click **Create**.
+
+### Testing
+
+1. Go to **Defender for Cloud** > **Security alerts** > **Sample alerts** > **Create sample alerts**.
+2. Wait 1-2 minutes for the Workflow Automation to trigger.
+3. You should receive a push notification on your iPhone via PocketSOC.
+4. You can also check the Logic App **Runs history** to verify it executed successfully.
+
 ## Troubleshooting
 
 | Issue | Solution |
