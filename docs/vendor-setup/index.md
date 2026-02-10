@@ -8,6 +8,7 @@ PocketSOC connects to your security vendor's API to pull detection data. You con
 |--------|----------|-------------|
 | **CrowdStrike** | Falcon Endpoint Protection | OAuth2 (API client credentials) |
 | **Microsoft Defender** | Defender for Endpoint | OAuth2 (app permissions) or Delegated auth |
+| **Defender for Cloud** | Azure cloud security alerts | Delegated auth or OAuth2 (app permissions) |
 
 ## Adding a vendor configuration
 
@@ -22,7 +23,8 @@ You can add multiple vendor configurations — for example, a CrowdStrike produc
 ## Vendor-specific guides
 
 - [CrowdStrike](/vendor-setup/crowdstrike) — Create an API client in the Falcon console
-- [Microsoft Defender](/vendor-setup/defender) — Register an app in Azure AD
+- [Microsoft Defender](/vendor-setup/defender) — Register an app in Azure AD for Defender for Endpoint
+- [Defender for Cloud](/vendor-setup/defender-for-cloud) — Register an app and assign Azure RBAC roles
 
 ## How configurations are delivered to devices
 

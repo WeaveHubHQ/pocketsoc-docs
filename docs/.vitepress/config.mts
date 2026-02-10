@@ -44,6 +44,7 @@ export default defineConfig({
           { text: 'Overview', link: '/vendor-setup/' },
           { text: 'CrowdStrike', link: '/vendor-setup/crowdstrike' },
           { text: 'Microsoft Defender', link: '/vendor-setup/defender' },
+          { text: 'Defender for Cloud', link: '/vendor-setup/defender-for-cloud' },
         ],
       },
       {
