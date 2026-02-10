@@ -25,28 +25,40 @@ We recommend **Delegated** for most deployments — it provides user-scoped acce
 2. Click **New registration**.
 3. Set the name to `PocketSOC`.
 4. For **Supported account types**, select **Accounts in this organizational directory only**.
-5. Under **Redirect URI**, select **Public client/native** and enter:
-   ```
-   pocketsoc://auth
-   ```
+5. Leave the Redirect URI blank for now (we'll configure it in the next step for delegated auth).
 6. Click **Register**.
 7. Copy the **Application (client) ID** and **Directory (tenant) ID** from the Overview page.
 
+## Step 2: Configure the platform (Delegated auth only)
+
+If you are using **delegated auth**, you need to add a redirect URI so the iOS app can complete the interactive sign-in flow.
+
+1. In your app registration, go to **Authentication** > **Add a platform**.
+2. Select **Mobile and desktop applications**.
+3. Under **Custom redirect URIs**, enter:
+   ```
+   pocketsoc://auth
+   ```
+4. Click **Configure**.
+
 ::: warning
-The redirect URI must be exactly `pocketsoc://auth` — this is required for the iOS app's delegated authentication flow. Without it, interactive sign-in will fail.
+The redirect URI must be exactly `pocketsoc://auth`. Without it, the interactive sign-in from the iOS app will fail.
 :::
 
-## Step 2: Configure API permissions
+::: info
+If you are using **App permissions** (client credentials), you can skip this step — no redirect URI is needed.
+:::
 
-Defender for Cloud uses the **Azure Resource Manager (ARM)** API, not a dedicated security API.
+## Step 3: Configure API permissions
 
-1. Go to **API permissions** > **Add a permission**.
-2. Select **Azure Service Management** (also called **Azure Management**).
+Defender for Cloud uses the **Azure Resource Manager (ARM)** API, not a dedicated security API like Defender for Endpoint.
 
 ### For Delegated permissions (recommended)
 
+1. In your app registration, go to **API permissions** > **Add a permission**.
+2. Select **APIs my organization uses** and search for **Windows Azure Service Management** (or select it from the list under **Azure Service Management**).
 3. Select **Delegated permissions**.
-4. Add the following permission:
+4. Check the following permission:
 
 | Permission | Description |
 |-----------|-------------|
@@ -55,23 +67,15 @@ Defender for Cloud uses the **Azure Resource Manager (ARM)** API, not a dedicate
 5. Click **Add permissions**.
 6. Click **Grant admin consent for [your tenant]**.
 
-### For App permissions
+### For App permissions (client credentials)
 
-3. Select **Application permissions**.
-4. Add the following permission:
-
-| Permission | Description |
-|-----------|-------------|
-| `user_impersonation` | Access Azure Service Management as the application |
-
-5. Click **Add permissions**.
-6. Click **Grant admin consent for [your tenant]**.
+No API permissions need to be added in the app registration. For client credentials, access to Defender for Cloud is controlled entirely through the **Azure RBAC role** assigned in the next step.
 
 ::: info
-Unlike Defender for Endpoint, Defender for Cloud does not have granular API scopes. The `user_impersonation` scope on Azure Service Management grants access to the ARM API, which includes Defender for Cloud alerts.
+Unlike Defender for Endpoint (which uses granular scopes like `Alert.Read.All`), Defender for Cloud is part of the Azure Resource Manager API. For delegated auth, the `user_impersonation` scope grants ARM access. For app permissions, the RBAC role on the subscription is what authorizes access.
 :::
 
-## Step 3: Assign Azure RBAC roles
+## Step 4: Assign Azure RBAC roles
 
 The user or application must have the appropriate role on the subscription to read and manage alerts.
 
@@ -96,7 +100,7 @@ Assign the role to the **user** who will sign in via PocketSOC.
 
 Assign the role to the **application** (service principal) you registered in Step 1. When adding the role assignment, switch to the **Members** tab, select **User, group, or service principal**, and search for your app name (`PocketSOC`).
 
-## Step 4: Create a client secret (App permissions only)
+## Step 5: Create a client secret (App permissions only)
 
 If you chose **App permissions**, create a client secret:
 
@@ -113,7 +117,7 @@ Note the expiration date. You will need to rotate the secret before it expires. 
 If you chose **Delegated permissions**, you do not need a client secret. The user will authenticate interactively when connecting in the iOS app.
 :::
 
-## Step 5: Find your Subscription ID
+## Step 6: Find your Subscription ID
 
 1. Go to [Azure Portal](https://portal.azure.com) > **Subscriptions**.
 2. Select the subscription that has Defender for Cloud enabled.
@@ -123,7 +127,7 @@ If you chose **Delegated permissions**, you do not need a client secret. The use
 If you have multiple subscriptions with Defender for Cloud, you can create a separate PocketSOC profile for each one.
 :::
 
-## Step 6: Add the configuration in PocketSOC
+## Step 7: Add the configuration in PocketSOC
 
 ### Option A: Via the portal (team deployment)
 
@@ -137,9 +141,9 @@ If you have multiple subscriptions with Defender for Cloud, you can create a sep
 | **Display Name** | A friendly name (e.g., "Azure Production"). This is shown on each detection in the iOS app to identify which vendor source it came from. |
 | **Auth Type** | Delegated (recommended) or OAuth |
 | **Tenant ID** | Directory (tenant) ID from Step 1 |
-| **Subscription ID** | Subscription ID from Step 5 |
+| **Subscription ID** | Subscription ID from Step 6 |
 | **Application ID** | Application (client) ID from Step 1 |
-| **Client Secret** | Secret value from Step 4 (App permissions only) |
+| **Client Secret** | Secret value from Step 5 (App permissions only) |
 
 4. Click **Save**.
 
@@ -151,7 +155,7 @@ If you have multiple subscriptions with Defender for Cloud, you can create a sep
 4. Enter the same fields as above.
 5. Tap **Connect**. For delegated auth, you will be prompted to sign in via Microsoft.
 
-## Step 7: Verify on the iOS app
+## Step 8: Verify on the iOS app
 
 1. Open PocketSOC on your iPhone.
 2. If using delegated auth, you will see a Microsoft sign-in prompt the first time.
