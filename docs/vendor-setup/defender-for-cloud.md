@@ -129,8 +129,6 @@ If you have multiple subscriptions with Defender for Cloud, you can create a sep
 
 ## Step 7: Add the configuration in PocketSOC
 
-### Option A: Via the portal (team deployment)
-
 1. Go to [portal.pocketsoc.com](https://portal.pocketsoc.com) > **Settings**.
 2. Under **Vendor Configurations**, click **Add Configuration**.
 3. Fill in the fields:
@@ -146,14 +144,6 @@ If you have multiple subscriptions with Defender for Cloud, you can create a sep
 | **Client Secret** | Secret value from Step 5 (App permissions only) |
 
 4. Click **Save**.
-
-### Option B: Directly on the iOS app
-
-1. Open PocketSOC on your iPhone.
-2. Go to **Settings** > **Profiles** > **Add Profile**.
-3. Select **Defender for Cloud**.
-4. Enter the same fields as above.
-5. Tap **Connect**. For delegated auth, you will be prompted to sign in via Microsoft.
 
 ## Step 8: Verify on the iOS app
 

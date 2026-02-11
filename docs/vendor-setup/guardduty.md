@@ -108,8 +108,6 @@ If GuardDuty is enabled in multiple regions, you can create a separate PocketSOC
 
 ## Step 5: Add the configuration in PocketSOC
 
-### Option A: Via the portal (team deployment)
-
 1. Go to [portal.pocketsoc.com](https://portal.pocketsoc.com) > **Settings**.
 2. Under **Vendor Configurations**, click **Add Configuration**.
 3. Fill in the fields:
@@ -125,14 +123,6 @@ If GuardDuty is enabled in multiple regions, you can create a separate PocketSOC
 4. Click **Save**.
 
 <!-- ![GuardDuty vendor config form](/images/portal-guardduty-config.png) -->
-
-### Option B: Directly on the iOS app
-
-1. Open PocketSOC on your iPhone.
-2. Go to **Settings** > **Profiles** > **Add Profile**.
-3. Select **AWS GuardDuty**.
-4. Enter the same fields as above.
-5. Tap **Connect**.
 
 ## Step 6: Verify on the iOS app
 
