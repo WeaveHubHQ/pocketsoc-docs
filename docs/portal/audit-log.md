@@ -35,6 +35,36 @@ Every significant action in your organization is recorded:
 3. Use the **event type** filter to narrow results.
 4. Each entry shows the timestamp, event type, user who performed the action, and relevant details.
 
+## Splunk HEC forwarding
+
+Enterprise customers can forward PocketSOC audit logs to Splunk using HTTP Event Collector (HEC). This sends all portal activity (user sign-ins, config changes, device registrations) to a Splunk index for compliance and monitoring.
+
+### Setup
+
+1. In Splunk Cloud, go to **Settings** > **Data Inputs** > **HTTP Event Collector**.
+2. Click **New Token** and configure:
+
+| Setting | Value |
+|---------|-------|
+| **Name** | `PocketSOC Audit Logs` |
+| **Source type** | `_json` |
+| **Index** | Choose an index (e.g., `main` or a dedicated `pocketsoc` index) |
+
+3. Copy the **HEC token** and **HEC URL** (typically `https://http-inputs-<your-instance>.splunkcloud.com:443/services/collector`).
+4. In the PocketSOC portal, go to **Settings** > **Splunk Forwarding**.
+5. Enter the HEC URL and token, then click **Test Connection** to verify.
+6. Enable forwarding.
+
+PocketSOC will forward new audit log entries to Splunk every minute.
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| HEC forwarding errors in portal | Verify the HEC URL uses HTTPS and the HEC token is valid. Use **Test Connection** to diagnose. |
+| Events not appearing in Splunk | Check that the target index exists and the HEC token has write access to it. |
+| Token rotation | Create a new HEC token in Splunk, update it in PocketSOC portal (Settings > Splunk Forwarding), then delete the old token. |
+
 ## Retention
 
 Audit log entries are retained indefinitely for your organization.

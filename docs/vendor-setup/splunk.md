@@ -100,27 +100,9 @@ These can be set in the saved search editor or directly in `savedsearches.conf`.
 2. You should receive a push notification on your device.
 3. Tap the notification to open PocketSOC and view the triggered alert details from Splunk.
 
-## Optional: Splunk HEC forwarding (audit logs)
-
-Enterprise customers can also forward PocketSOC audit logs **to** Splunk using HTTP Event Collector (HEC). This sends all portal activity (user sign-ins, config changes, device registrations) to a Splunk index for compliance and monitoring.
-
-To set this up:
-
-1. In Splunk Cloud, go to **Settings** > **Data Inputs** > **HTTP Event Collector**.
-2. Click **New Token** and configure:
-
-| Setting | Value |
-|---------|-------|
-| **Name** | `PocketSOC Audit Logs` |
-| **Source type** | `_json` |
-| **Index** | Choose an index (e.g., `main` or a dedicated `pocketsoc` index) |
-
-3. Copy the **HEC token** and **HEC URL** (typically `https://http-inputs-<your-instance>.splunkcloud.com:443/services/collector`).
-4. In the PocketSOC portal, go to **Settings** > **Splunk Forwarding**.
-5. Enter the HEC URL and token, then click **Test Connection** to verify.
-6. Enable forwarding.
-
-PocketSOC will forward new audit log entries to Splunk every minute.
+::: tip
+Enterprise customers can also forward PocketSOC audit logs **to** Splunk via HEC. See [Audit Log > Splunk HEC forwarding](/portal/audit-log#splunk-hec-forwarding) for setup instructions.
+:::
 
 ## Troubleshooting
 
@@ -130,19 +112,11 @@ PocketSOC will forward new audit log entries to Splunk every minute.
 | "Unauthorized" in mobile app when viewing alert | The Splunk auth token may have expired. Create a new token and update the vendor config in the portal. |
 | Alert results show "No results" | The triggered alert may have expired. Increase `alert.expires` on the saved search. |
 | Webhook not received by PocketSOC | Check Splunk's outbound firewall rules. The webhook must be able to reach `push.pocketsoc.com` over HTTPS. |
-| HEC forwarding errors in portal | Verify the HEC URL uses HTTPS and the HEC token is valid. Use **Test Connection** to diagnose. |
-
 ## Rotating credentials
 
-**Splunk auth token (for mobile app):**
 1. Create a new token in Splunk (Settings > Tokens).
 2. Update the auth token in the PocketSOC portal vendor configuration.
 3. Delete the old token in Splunk.
-
-**HEC token (for audit log forwarding):**
-1. Create a new HEC token in Splunk (Settings > Data Inputs > HTTP Event Collector).
-2. Update the HEC token in PocketSOC portal (Settings > Splunk Forwarding).
-3. Delete the old HEC token in Splunk.
 
 ## Supported Splunk versions
 
