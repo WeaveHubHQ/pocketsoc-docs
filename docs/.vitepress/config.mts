@@ -46,6 +46,7 @@ export default defineConfig({
           { text: 'Microsoft Defender', link: '/vendor-setup/defender' },
           { text: 'Defender for Cloud', link: '/vendor-setup/defender-for-cloud' },
           { text: 'AWS GuardDuty', link: '/vendor-setup/guardduty' },
+          { text: 'Splunk', link: '/vendor-setup/splunk' },
         ],
       },
       {

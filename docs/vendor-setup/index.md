@@ -10,6 +10,7 @@ PocketSOC connects to your security vendor's API to pull detection data. You con
 | **Microsoft Defender** | Defender for Endpoint | OAuth2 (app permissions) or Delegated auth |
 | **Defender for Cloud** | Azure cloud security alerts | Delegated auth or OAuth2 (app permissions) |
 | **AWS GuardDuty** | AWS threat detection findings | AWS access keys (SigV4) |
+| **Splunk** | Saved search alerts via webhook | Auth token |
 
 ## Adding a vendor configuration
 
@@ -27,6 +28,7 @@ You can add multiple vendor configurations — for example, a CrowdStrike produc
 - [Microsoft Defender](/vendor-setup/defender) — Register an app in Azure AD for Defender for Endpoint
 - [Defender for Cloud](/vendor-setup/defender-for-cloud) — Register an app and assign Azure RBAC roles
 - [AWS GuardDuty](/vendor-setup/guardduty) — Create an IAM user with GuardDuty read access
+- [Splunk](/vendor-setup/splunk) — Configure webhook alert actions and auth tokens
 
 ## How configurations are delivered to devices
 
